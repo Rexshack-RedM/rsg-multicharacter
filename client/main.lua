@@ -40,35 +40,6 @@ AddEventHandler('onResourceStop', function(resource)
     end
 end)
 
--- Functions
-
--- local function skyCam(bool)
---     if bool then
---         DoScreenFadeIn(1000)
---         SetTimecycleModifier('hud_def_blur')
---         SetTimecycleModifierStrength(1.0)
---         cam = CreateCam("DEFAULT_SCRIPTED_CAMERA")
---         SetCamCoord(cam, -555.925, -3778.709, 238.597)
---         SetCamRot(cam, -20.0, 0.0, 83)
---         SetCamActive(cam, true)
---         RenderScriptCams(true, false, 1, true, true)
---         fixedCam = CreateCam("DEFAULT_SCRIPTED_CAMERA")
---         SetCamCoord(fixedCam, -561.206, -3776.224, 239.597)
---         SetCamRot(fixedCam, -20.0, 0, 270.0)
---         SetCamActive(fixedCam, true)
---         SetCamActiveWithInterp(fixedCam, cam, 3900, true, true)
---         Wait(3900)
---         DestroyCam(groundCam)
---         InterP = true
---     else
---         SetTimecycleModifier('default')
---         SetCamActive(cam, false)
---         DestroyCam(cam, true)
---         RenderScriptCams(false, false, 1, true, true)
---         FreezeEntityPosition(PlayerPedId(), false)
---     end
--- end
-
 local function openCharMenu(bool)
     RSGCore.Functions.TriggerCallback("rsg-multicharacter:server:GetNumberOfCharacters", function(result)
         SetNuiFocus(bool, bool)
@@ -78,8 +49,6 @@ local function openCharMenu(bool)
             nChar = result,
         })
         choosingCharacter = bool
-        -- Wait(100)
-        -- skyCam(bool)
     end)
 end
 
