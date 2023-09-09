@@ -5,8 +5,8 @@ local foundResources = {}
 local RSGCore = exports['rsg-core']:GetCoreObject()
 
 local StarterItems = {
-    ['bread']      = { amount = 5, item = 'bread' },
-	['canteen100'] = { amount = 1, item = 'canteen100' }
+    ['bread'] = { amount = 5, item = 'bread' },
+    ['water'] = { amount = 5, item = 'water' }
 }
 
 local function GiveStarterItems(source)
