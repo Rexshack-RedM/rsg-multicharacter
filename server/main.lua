@@ -4,11 +4,13 @@ local foundResources = {}
 -- Functions
 local RSGCore = exports['rsg-core']:GetCoreObject()
 
+-- starter items
 local StarterItems = {
-    ['bread'] = { amount = 5, item = 'bread' },
-    ['water'] = { amount = 5, item = 'water' }
+    ['bread']      = { amount = 5, item = 'bread' },
+    ['canteen100'] = { amount = 1, item = 'canteen100' }
 }
 
+-- give starter items
 local function GiveStarterItems(source)
     local Player = RSGCore.Functions.GetPlayer(source)
     for k, v in pairs(StarterItems) do
