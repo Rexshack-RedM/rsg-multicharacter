@@ -52,7 +52,6 @@ local function openCharMenu(bool)
     end)
 end
 
-
 RegisterNetEvent('rsg-multicharacter:client:closeNUI', function()
     DeleteEntity(charPed)
     SetNuiFocus(false, false)

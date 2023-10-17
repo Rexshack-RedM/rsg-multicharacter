@@ -50,39 +50,8 @@ local function GiveStarterItems(source)
     end
 end
 
-local function loadHouseData()
-    local HouseGarages = {}
-    local Houses = {}
-    local result = MySQL.Sync.fetchAll('SELECT * FROM houselocations')
-    if result[1] ~= nil then
-        for k, v in pairs(result) do
-            local owned = false
-            if tonumber(v.owned) == 1 then
-                owned = true
-            end
-            local garage = v.garage ~= nil and json.decode(v.garage) or {}
-            Houses[v.name] = {
-                coords = json.decode(v.coords),
-                owned = v.owned,
-                price = v.price,
-                locked = true,
-                adress = v.label,
-                tier = v.tier,
-                garage = garage,
-                decorations = {},
-            }
-            HouseGarages[v.name] = {
-                label = v.label,
-                takeVehicle = garage,
-            }
-        end
-    end
-    TriggerClientEvent("rsg-garages:client:houseGarageConfig", -1, HouseGarages)
-    TriggerClientEvent("rsg-houses:client:setHouseConfig", -1, Houses)
-end
-
 RegisterNetEvent('rsg-multicharacter:server:disconnect', function(source)
-    DropPlayer(source, "You have disconnected from QBCore RedM")
+    DropPlayer(source, "You have disconnected from RSG RedM")
 end)
 
 RegisterNetEvent('rsg-multicharacter:server:loadUserData', function(cData)
@@ -93,7 +62,7 @@ RegisterNetEvent('rsg-multicharacter:server:loadUserData', function(cData)
         TriggerClientEvent("rsg-multicharacter:client:closeNUI", src)
         TriggerClientEvent('rsg-spawn:client:setupSpawnUI', src, cData, false)
         TriggerEvent("rsg-log:server:CreateLog", "joinleave", "Loaded", "green", "**".. GetPlayerName(src) .. "** ("..cData.citizenid.." | "..src..") loaded..")
-	end
+    end
 end)
 
 RegisterNetEvent('rsg-multicharacter:server:createCharacter', function(data, enabledhouses)
@@ -104,10 +73,9 @@ RegisterNetEvent('rsg-multicharacter:server:createCharacter', function(data, ena
     if RSGCore.Player.Login(src, false, newData) then
         RSGCore.ShowSuccess(GetCurrentResourceName(), GetPlayerName(src)..' has succesfully loaded!')
         RSGCore.Commands.Refresh(src)
-        --[[if enabledhouses then loadHouseData() end]] -- Enable once housing is ready
         TriggerClientEvent("rsg-multicharacter:client:closeNUI", src)
         GiveStarterItems(src)
-	end
+    end
 end)
 
 RegisterNetEvent('rsg-multicharacter:server:deleteCharacter', function(citizenid)
