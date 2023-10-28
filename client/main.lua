@@ -167,6 +167,7 @@ RegisterNetEvent('rsg-multicharacter:client:chooseChar', function()
     while selectingChar do
         Wait(1)
         local coords = GetEntityCoords(PlayerPedId())
+        Citizen.InvokeNative(0x669E223E64B1903C, 0, 0, 0, 0, true)
         DrawLightWithRange(coords.x, coords.y , coords.z + 1.0 , 255, 255, 255, 5.5, 50.0)
     end
 end)
