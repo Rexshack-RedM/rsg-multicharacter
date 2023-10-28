@@ -265,6 +265,7 @@ RegisterNUICallback('removeBlur', function()
 end)
 
 RegisterNUICallback('createNewCharacter', function(data) -- Creating a char
+    selectingChar = false
     DoScreenFadeOut(150)
     Wait(200)
     DestroyAllCams(true)
