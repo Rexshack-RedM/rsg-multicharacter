@@ -72,6 +72,7 @@ if GetConvar('qb_locale', 'en') == 'fr' then
         }
     }
 
+if GetConvar('rsg_locale', 'en') == 'fr' then
     Lang = Locale:new({
         phrases = Translations,
         warnOnMissing = true,
