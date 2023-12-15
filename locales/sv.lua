@@ -1,5 +1,4 @@
-if GetConvar('qb_locale', 'en') == 'sv' then
-    Translations = {
+Translations = Translations or {
         notifications = {
             ["char_deleted"] = "Karaktären togs bort!",
             ["deleted_other_char"] = "Du tog bort karaktären med citizen id %{citizenid}.",
