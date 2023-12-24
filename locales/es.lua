@@ -19,7 +19,7 @@ Translations = Translations or {
         },
 
         misc = {
-            ["droppedplayer"] = "Se ha desconectado de QRCore"
+            ["droppedplayer"] = "Se ha desconectado de RSGCore"
         },
 
         ui = {

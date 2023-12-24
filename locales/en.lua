@@ -19,7 +19,7 @@ Translations = Translations or {
     },
 
     misc = {
-        ["droppedplayer"] = "You have disconnected from RSG"
+        ["droppedplayer"] = "You have disconnected from RSGCore"
     },
 
     ui = {
