@@ -19,7 +19,7 @@ commands = {
 },
 
 misc = {
-    ["droppedplayer"] = "Você desconectou do QRCore"
+    ["droppedplayer"] = "Você desconectou do RSGCore"
 },
 
 ui = {
