@@ -19,7 +19,7 @@ Translations = Translations or {
         },
 
         misc = {
-            ["droppedplayer"] = "Vous avez quitté QRCore"
+            ["droppedplayer"] = "Vous avez quitté RSGCore"
         },
 
         ui = {
