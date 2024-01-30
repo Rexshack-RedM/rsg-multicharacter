@@ -270,6 +270,7 @@ RegisterNUICallback('createNewCharacter', function(data) -- Creating a char
     Wait(200)
     DestroyAllCams(true)
     DeleteEntity(charPed)
+    FreezeEntityPosition(PlayerPedId(), false)
     TriggerEvent("rsg-appearance:OpenCreator")
     SetModelAsNoLongerNeeded(charPed)
     TriggerServerEvent('rsg-multicharacter:server:createCharacter', data)
