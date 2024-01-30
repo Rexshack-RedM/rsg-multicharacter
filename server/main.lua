@@ -54,18 +54,22 @@ RegisterNetEvent('rsg-multicharacter:server:disconnect', function(source)
     DropPlayer(source, "You have disconnected from RSG RedM")
 end)
 
-RegisterNetEvent('rsg-multicharacter:server:loadUserData', function(cData)
+RegisterNetEvent('rsg-multicharacter:server:loadUserData', function(cData, skindata)
     local src = source
     if RSGCore.Player.Login(src, cData.citizenid) then
         print('^2[rsg-core]^7 '..GetPlayerName(src)..' (Citizen ID: '..cData.citizenid..') has succesfully loaded!')
         RSGCore.Commands.Refresh(src)
         TriggerClientEvent("rsg-multicharacter:client:closeNUI", src)
-        TriggerClientEvent('rsg-spawn:client:setupSpawnUI', src, cData, false)
+        if not skindata then
+            TriggerClientEvent('rsg-spawn:client:setupSpawnUI', src, cData, false)
+        else
+            TriggerClientEvent('rsg-appearance:OpenCreator', src, false, true)
+        end
         TriggerEvent("rsg-log:server:CreateLog", "joinleave", "Loaded", "green", "**".. GetPlayerName(src) .. "** ("..cData.citizenid.." | "..src..") loaded..")
     end
 end)
 
-RegisterNetEvent('rsg-multicharacter:server:createCharacter', function(data, enabledhouses)
+RegisterNetEvent('rsg-multicharacter:server:createCharacter', function(data)
     local newData = {}
     local src = source
     newData.cid = data.cid
@@ -73,7 +77,6 @@ RegisterNetEvent('rsg-multicharacter:server:createCharacter', function(data, ena
     if RSGCore.Player.Login(src, false, newData) then
         RSGCore.ShowSuccess(GetCurrentResourceName(), GetPlayerName(src)..' has succesfully loaded!')
         RSGCore.Commands.Refresh(src)
-        TriggerClientEvent("rsg-multicharacter:client:closeNUI", src)
         GiveStarterItems(src)
     end
 end)

@@ -1,13 +1,8 @@
 local charPed = nil
-local choosingCharacter = false
-local currentSkin = nil
-local currentClothes = nil
 local selectingChar = true
 local isChossing = false
-local PlayerSkins = {}
-local PlayerClothes = {}
-local characters = {}
 local RSGCore = exports['rsg-core']:GetCoreObject()
+local DataSkin = nil
 
 local cams = {
     {
@@ -52,47 +47,6 @@ local function baseModel(sex)
         Citizen.InvokeNative(0xD3A7B003ED343FD9, charPed, 0x285F3566, true, true, true); -- pants
         Citizen.InvokeNative(0xD3A7B003ED343FD9, charPed, 0x134D7E03, true, true, true); -- bots
     end
-end
-
-local function createCharacter(sex)
-    if (sex == 0) then
-        local model = 'mp_male'
-        RequestAndSetModel(model)
-        Wait(1000)
-        Citizen.InvokeNative(0xD3A7B003ED343FD9, PlayerPedId(), 0x158cb7f2, true, true, true); --head
-        Citizen.InvokeNative(0xD3A7B003ED343FD9, PlayerPedId(), 0x16e292a1, true, true, true); --torso
-        Citizen.InvokeNative(0xD3A7B003ED343FD9, PlayerPedId(), 0xa615e02, true, true, true); --legs
-        Citizen.InvokeNative(0xD3A7B003ED343FD9, PlayerPedId(), 0x105ddb4, true, true, true); --hair
-        Citizen.InvokeNative(0xD3A7B003ED343FD9, PlayerPedId(), 0x10404a83, true, true, true); --mustache
-        -- Citizen.InvokeNative(0x77FF8D35EEC6BBC4, PlayerPedId(), 0, 0) -- set outfit preset, unsure if needed
-        SetModelAsNoLongerNeeded(model)
-    else
-        local model = 'mp_female'
-        RequestAndSetModel(model)
-        Wait(1000)
-        Citizen.InvokeNative(0xD3A7B003ED343FD9, PlayerPedId(), 0x11567c3, true, true, true); --head
-        Citizen.InvokeNative(0xD3A7B003ED343FD9, PlayerPedId(), 0x2c4fe0c5, true, true, true); --torso
-        Citizen.InvokeNative(0xD3A7B003ED343FD9, PlayerPedId(), 0xaa25eca7, true, true, true); --legs
-        Citizen.InvokeNative(0xD3A7B003ED343FD9, PlayerPedId(), 0x104293ea, true, true, true); --hair
-        -- Citizen.InvokeNative(0x77FF8D35EEC6BBC4, PlayerPedId(), 0, 0) -- set outfit preset, unsure if needed
-        SetModelAsNoLongerNeeded(model)
-    end
-    selectingChar = false
-end
-
-local function RequestAndSetModel(model)
-    local requestedModel = GetHashKey(model)
-    RequestModel(requestedModel)
-    while not HasModelLoaded(requestedModel) do
-        Wait(0)
-    end
-    Wait(200)
-    Citizen.InvokeNative(0xED40380076A31506, PlayerId(), requestedModel, false)
-    Citizen.InvokeNative(0x77FF8D35EEC6BBC4, PlayerPedId(), 0, 0)
-    Wait(200)
-    Citizen.InvokeNative(0xD710A5007C2AC539, PlayerPedId(), 0x1D4C528A, 0)
-    Citizen.InvokeNative(0xD710A5007C2AC539, PlayerPedId(), 0x3F1F01E5, 0)
-    Citizen.InvokeNative(0xD710A5007C2AC539, PlayerPedId(), 0xDA0E2C55, 0)
 end
 
 local function skyCam(bool)
@@ -180,6 +134,7 @@ RegisterNUICallback('cDataPed', function(data) -- Visually seeing the char
     if cData ~= nil then
         RSGCore.Functions.TriggerCallback('rsg-multicharacter:server:getAppearance', function(appearance)
             local skinTable = appearance.skin or {}
+            DataSkin = appearance.skin
             local clothesTable = appearance.clothes or {}
             local sex = tonumber(skinTable.sex) == 1 and `mp_male` or `mp_female`
             if sex ~= nil then
@@ -251,10 +206,10 @@ RegisterNUICallback('disconnectButton', function()
     TriggerServerEvent('rsg-multicharacter:server:disconnect')
 end)
 
-RegisterNUICallback('selectCharacter', function(data) -- When a char is selected and confirmed to use
-    CreateThread(function()
-        selectingChar = false
-        local cData = data.cData
+RegisterNUICallback('selectCharacter', function(data)
+    selectingChar = false
+    local cData = data.cData
+    if DataSkin ~= nil then
         DoScreenFadeOut(10)
         TriggerServerEvent('rsg-multicharacter:server:loadUserData', cData)
         openCharMenu(false)
@@ -266,7 +221,15 @@ RegisterNUICallback('selectCharacter', function(data) -- When a char is selected
         Wait(500)
         TriggerServerEvent("rsg-clothes:LoadClothes", 1)
         SetModelAsNoLongerNeeded(model)
-    end)
+    else
+        DoScreenFadeOut(10)
+        TriggerServerEvent('rsg-multicharacter:server:loadUserData', cData, true)
+        openCharMenu(false)
+        local model = IsPedMale(charPed) and 'mp_male' or 'mp_female'
+        SetEntityAsMissionEntity(charPed, true, true)
+        DeleteEntity(charPed)
+        SetModelAsNoLongerNeeded(model)
+    end
 end)
 
 RegisterNUICallback('setupCharacters', function() -- Present char info
@@ -286,14 +249,13 @@ RegisterNUICallback('createNewCharacter', function(data) -- Creating a char
     selectingChar = false
     DoScreenFadeOut(150)
     Wait(200)
+    TriggerEvent("rsg-multicharacter:client:closeNUI")
     DestroyAllCams(true)
-    DeleteEntity(charPed)
-    FreezeEntityPosition(PlayerPedId(), false)
-    TriggerEvent("rsg-appearance:OpenCreator")
     SetModelAsNoLongerNeeded(charPed)
-    TriggerServerEvent('rsg-multicharacter:server:createCharacter', data)
-    Wait(1000)
+    DeleteEntity(charPed)
     DoScreenFadeIn(1000)
+    FreezeEntityPosition(PlayerPedId(), false)
+    TriggerEvent("rsg-appearance:OpenCreator", data)
 end)
 
 RegisterNUICallback('removeCharacter', function(data) -- Removing a char
