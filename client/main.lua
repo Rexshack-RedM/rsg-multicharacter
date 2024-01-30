@@ -177,28 +177,46 @@ RegisterNUICallback('cDataPed', function(data) -- Visually seeing the char
     local cData = data.cData
     SetEntityAsMissionEntity(charPed, true, true)
     DeleteEntity(charPed)
-    if cData then
+    if cData ~= nil then
         RSGCore.Functions.TriggerCallback('rsg-multicharacter:server:getAppearance', function(appearance)
-            local skinTable = appearance.skin
-            local clothesTable = appearance.clothes
-            local sex = tonumber(skinTable.sex)
-            if sex == 1 then
-                model = "mp_male"
-            elseif sex == 2 then
-                model = "mp_female"
+            local skinTable = appearance.skin or {}
+            local clothesTable = appearance.clothes or {}
+            local sex = tonumber(skinTable.sex) == 1 and `mp_male` or `mp_female`
+            if sex ~= nil then
+                CreateThread(function ()
+                    RequestModel(sex)
+                    while not HasModelLoaded(sex) do
+                        Wait(0)
+                    end
+                    charPed = CreatePed(sex, -558.91, -3776.25, 237.63, 90.0, false, false)
+                    FreezeEntityPosition(charPed, false)
+                    SetEntityInvincible(charPed, true)
+                    SetBlockingOfNonTemporaryEvents(charPed, true)
+                    while not Citizen.InvokeNative(0xA0BC8FAED8CFEB3C, charPed) do
+                        Wait(1)
+                    end
+                    exports['rsg-appearance']:ApplySkinMultiChar(skinTable, charPed, clothesTable)
+                end)
+            else
+                CreateThread(function()
+                    local randommodels = {
+                        "mp_male",
+                        "mp_female",
+                    }
+                    local randomModel = randommodels[math.random(1, #randommodels)]
+                    local model = GetHashKey(randomModel)
+                    RequestModel(model)
+                    while not HasModelLoaded(model) do
+                        Wait(0)
+                    end
+                    Wait(100)
+                    baseModel(randomModel)
+                    charPed = CreatePed(model, -558.91, -3776.25, 237.63, 90.0, false, false)
+                    FreezeEntityPosition(charPed, false)
+                    SetEntityInvincible(charPed, true)
+                    SetBlockingOfNonTemporaryEvents(charPed, true)
+                end)
             end
-            RequestModel(model)
-            while not HasModelLoaded(model) do
-                Wait(0)
-            end
-            charPed = CreatePed(model, -558.91, -3776.25, 237.63, 90.0, true, false, 0, 0)
-            FreezeEntityPosition(charPed, false)
-            SetEntityInvincible(charPed, true)
-            SetBlockingOfNonTemporaryEvents(charPed, true)
-            while not Citizen.InvokeNative(0xA0BC8FAED8CFEB3C, charPed) do
-                Wait(1)
-            end
-            TriggerEvent('rsg-appearance:ApplySkin', skinTable, charPed, clothesTable)
         end, cData.citizenid)
     else
         CreateThread(function()
