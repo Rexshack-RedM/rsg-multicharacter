@@ -120,21 +120,17 @@ RSGCore.Functions.CreateCallback("rsg-multicharacter:server:GetNumberOfCharacter
 end)
 
 RSGCore.Functions.CreateCallback("rsg-multicharacter:server:getAppearance", function(source, cb, citizenid)
-    local license = RSGCore.Functions.GetIdentifier(source, 'license')
-    local skins = MySQL.Sync.fetchAll('SELECT * FROM playerskins WHERE citizenid = ? AND license = ?', {citizenid, license})
-    if skins[1] then
-        skin = skins[1].skin
-        decoded = json.decode(skin)
-    end
-    local _clothes =  MySQL.Sync.fetchAll('SELECT * FROM playerclothe WHERE citizenid = ? AND license = ?', {citizenid, license})
-    if _clothes[1] then
-        _clothes = json.decode(_clothes[1].clothes)
-    end
-    local appearance = {
-        skin = decoded,
-        clothes = _clothes
-    }
-    cb(appearance)
+    MySQL.Async.fetchAll('SELECT * FROM playerskins WHERE citizenid = ?', { citizenid}, function(result)
+        if result ~= nil and #result > 0 then
+            local skinData = json.decode(result[1].skin)
+            local clothesData = json.decode(result[1].clothes)
+            result[1].skin = skinData
+            result[1].clothes = clothesData
+            cb(result[1])
+        else
+            cb(nil)
+        end
+    end)
 end)
 
 RSGCore.Commands.Add("logout", "Logout of Character (Admin Only)", {}, false, function(source)
