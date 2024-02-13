@@ -48,7 +48,7 @@ Translations = Translations or {
         phonenumber = "Phone Number",
         accountnumber = "Account Number",
 
-        chardel_header = "Character Registration",
+        chardel_header = "Create New Character?",
 
         -- Delete character
         deletechar_header = "Delete Character",
