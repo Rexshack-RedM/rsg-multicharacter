@@ -1,5 +1,3 @@
-local RSGCore = exports['rsg-core']:GetCoreObject()
-
 -----------------------------------------------------------------------
 -- version checker
 -----------------------------------------------------------------------
@@ -20,7 +18,7 @@ local function CheckVersion()
 
         --versionCheckPrint('success', ('Current Version: %s'):format(currentVersion))
         --versionCheckPrint('success', ('Latest Version: %s'):format(text))
-        
+
         if text == currentVersion then
             versionCheckPrint('success', 'You are running the latest version.')
         else
@@ -32,9 +30,6 @@ end
 -----------------------------------------------------------------------
 
 -- Functions
-local identifierUsed = GetConvar('es_identifierUsed', 'steam')
-local foundResources = {}
--- Functions
 
 -- starter items
 local StarterItems = {
@@ -45,7 +40,7 @@ local StarterItems = {
 -- give starter items
 local function GiveStarterItems(source)
     local Player = RSGCore.Functions.GetPlayer(source)
-    for k, v in pairs(StarterItems) do
+    for _, v in pairs(StarterItems) do
         Player.Functions.AddItem(v.item, v.amount)
     end
 end
