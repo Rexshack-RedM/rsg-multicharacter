@@ -3,7 +3,7 @@ game 'rdr3'
 rdr3_warning 'I acknowledge that this is a prerelease build of RedM, and I am aware my resources *will* become incompatible once RedM ships.'
 
 description 'rsg-multicharacter'
-version '2.1.3'
+version '2.1.4'
 
 ui_page "html/index.html"
 
@@ -11,7 +11,10 @@ client_scripts {
     'client/main.lua'
 }
 
-shared_script 'config.lua'
+shared_scripts {
+    '@ox_lib/init.lua',
+    'config.lua'
+}
 
 server_scripts {
     '@oxmysql/lib/MySQL.lua',
@@ -30,3 +33,5 @@ files {
 dependencies {
     'rsg-core'
 }
+
+lua54 'yes'
