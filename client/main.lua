@@ -72,7 +72,7 @@ local function skyCam(bool)
         SetCamActive(cam, false)
         DestroyCam(cam, true)
         RenderScriptCams(false, false, 1, true, true)
-        FreezeEntityPosition(cache.ped, false)
+        FreezeEntityPosition(PlayerPedId(), false)
     end
 end
 
@@ -106,13 +106,13 @@ RegisterNetEvent('rsg-multicharacter:client:closeNUI', function()
 end)
 
 RegisterNetEvent('rsg-multicharacter:client:chooseChar', function()
-    SetEntityVisible(cache.ped, false, false)
+    SetEntityVisible(PlayerPedId(), false, false)
     SetNuiFocus(false, false)
     DoScreenFadeOut(10)
     Wait(1000)
     GetInteriorAtCoords(-558.9098, -3775.616, 238.59, 137.98)
-    FreezeEntityPosition(cache.ped, true)
-    SetEntityCoords(cache.ped, -562.91,-3776.25,237.63)
+    FreezeEntityPosition(PlayerPedId(), true)
+    SetEntityCoords(PlayerPedId(), -562.91,-3776.25,237.63)
     Wait(1500)
     ShutdownLoadingScreen()
     ShutdownLoadingScreenNui()
@@ -120,7 +120,7 @@ RegisterNetEvent('rsg-multicharacter:client:chooseChar', function()
     openCharMenu(true)
     while selectingChar do
         Wait(1)
-        local coords = GetEntityCoords(cache.ped)
+        local coords = GetEntityCoords(PlayerPedId())
         NetworkClockTimeOverride(0, 0, 0, 0, true)
         DrawLightWithRange(coords.x, coords.y , coords.z + 1.0 , 255, 255, 255, 5.5, 50.0)
     end
@@ -254,7 +254,7 @@ RegisterNUICallback('createNewCharacter', function(data) -- Creating a char
     SetModelAsNoLongerNeeded(charPed)
     DeleteEntity(charPed)
     DoScreenFadeIn(1000)
-    FreezeEntityPosition(cache.ped, false)
+    FreezeEntityPosition(PlayerPedId(), false)
     TriggerEvent("rsg-appearance:OpenCreator", data)
 end)
 
@@ -265,22 +265,21 @@ end)
 
 -- Threads
 CreateThread(function()
-
-    while not NetworkIsSessionStarted() do
-        Wait(100)
-    end
-
     RequestImap(-1699673416)
     RequestImap(1679934574)
     RequestImap(183712523)
-
-    TriggerEvent('rsg-multicharacter:client:chooseChar')
-    isChossing = true
-    CreateThread(function()
-        while isChossing do
-            Wait(0)
-            UiPromptDisablePromptsThisFrame()
+    while true do
+        Wait(0)
+        if NetworkIsSessionStarted() then
+            TriggerEvent('rsg-multicharacter:client:chooseChar')
+            isChossing = true
+            Citizen.CreateThread(function()
+                while isChossing do
+                    Wait(0)
+                    Citizen.InvokeNative(0xF1622CE88A1946FB)
+                end
+            end)
+            return
         end
-    end)
-
+    end
 end)
