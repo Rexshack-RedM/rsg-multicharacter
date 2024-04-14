@@ -265,21 +265,21 @@ end)
 
 -- Threads
 CreateThread(function()
+
+    if GetIsLoadingScreenActive() then
+        Wait(100)
+    end
+
     RequestImap(-1699673416)
     RequestImap(1679934574)
     RequestImap(183712523)
-    while true do
-        Wait(0)
-        if NetworkIsSessionStarted() then
-            TriggerEvent('rsg-multicharacter:client:chooseChar')
-            isChossing = true
-            Citizen.CreateThread(function()
-                while isChossing do
-                    Wait(0)
-                    Citizen.InvokeNative(0xF1622CE88A1946FB)
-                end
-            end)
-            return
+
+    TriggerEvent('rsg-multicharacter:client:chooseChar')
+    isChossing = true
+        CreateThread(function()
+            while isChossing do
+            Wait(0)
+            Citizen.InvokeNative(0xF1622CE88A1946FB)
         end
-    end
+    end)
 end)
