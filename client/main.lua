@@ -117,11 +117,11 @@ RegisterNetEvent('rsg-multicharacter:client:chooseChar', function()
     ShutdownLoadingScreen()
     ShutdownLoadingScreenNui()
     Wait(10)
+    exports.weathersync:setMyTime(0, 0, 0, 0, true)
     openCharMenu(true)
     while selectingChar do
         Wait(1)
         local coords = GetEntityCoords(PlayerPedId())
-        NetworkClockTimeOverride(0, 0, 0, 0, true)
         DrawLightWithRange(coords.x, coords.y , coords.z + 1.0 , 255, 255, 255, 5.5, 50.0)
     end
 end)
