@@ -266,9 +266,7 @@ end)
 -- Threads
 CreateThread(function()
 
-    if GetIsLoadingScreenActive() then
-        Wait(100)
-    end
+    repeat Wait(1000) until GetIsLoadingScreenActive()
 
     RequestImap(-1699673416)
     RequestImap(1679934574)
