@@ -65,7 +65,7 @@ RegisterNetEvent('rsg-multicharacter:server:loadUserData', function(cData, skind
         else
             TriggerClientEvent('rsg-appearance:OpenCreator', src, false, true)
         end
-        TriggerEvent("rsg-log:server:CreateLog", "joinleave", "Loaded", "green", "**".. GetPlayerName(src) .. "** ("..cData.citizenid.." | "..src..") loaded..")
+        TriggerEvent('rsg-log:server:CreateLog', 'joinleave', 'Player Joined Server', 'green', '**' .. GetPlayerName(src) .. '** joined the server..')
     end
 end)
 
