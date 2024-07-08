@@ -217,9 +217,9 @@ RegisterNUICallback('selectCharacter', function(data)
         SetEntityAsMissionEntity(charPed, true, true)
         DeleteEntity(charPed)
         Wait(5000)
-        TriggerServerEvent("rsg-appearance:loadSkin")
+        TriggerServerEvent('rsg-appearance:server:LoadSkin')
         Wait(500)
-        TriggerServerEvent("rsg-clothes:LoadClothes", 1)
+        TriggerServerEvent('rsg-appearance:server:LoadClothes', 1)
         SetModelAsNoLongerNeeded(model)
     else
         DoScreenFadeOut(10)
@@ -255,7 +255,7 @@ RegisterNUICallback('createNewCharacter', function(data) -- Creating a char
     DeleteEntity(charPed)
     DoScreenFadeIn(1000)
     FreezeEntityPosition(PlayerPedId(), false)
-    TriggerEvent("rsg-appearance:OpenCreator", data)
+    TriggerEvent('rsg-appearance:client:OpenCreator', data)
 end)
 
 RegisterNUICallback('removeCharacter', function(data) -- Removing a char
