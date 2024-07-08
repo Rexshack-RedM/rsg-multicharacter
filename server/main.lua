@@ -32,7 +32,7 @@ RegisterNetEvent('rsg-multicharacter:server:loadUserData', function(cData, skind
         if not skindata then
             TriggerClientEvent('rsg-spawn:client:setupSpawnUI', src, cData, false)
         else
-            TriggerClientEvent('rsg-appearance:OpenCreator', src, false, true)
+            TriggerClientEvent('rsg-appearance:client:OpenCreator', src, false, true)
         end
         TriggerEvent('rsg-log:server:CreateLog', 'joinleave', 'Player Joined Server', 'green', '**' .. GetPlayerName(src) .. '** joined the server..')
     end
