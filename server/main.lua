@@ -1,26 +1,5 @@
 local RSGCore = exports['rsg-core']:GetCoreObject()
 
----------------------------------------------
--- send To Discord
--------------------------------------------
-local sendToDiscord = function(color, name, message, footer, type)
-    local embed = {
-            {
-                ["color"] = color,
-                ["title"] = "**".. name .."**",
-                ["description"] = message,
-                ["footer"] = {
-                ["text"] = footer
-            }
-        }
-    }
-    if type == "load" then  -- public
-    	PerformHttpRequest(Config['Webhooks']['loaded'], function(err, text, headers) end, 'POST', json.encode({username = name, embeds = embed}), { ['Content-Type'] = 'application/json' })
-    elseif type == "join" then -- pribate
-        PerformHttpRequest(Config['Webhooks']['joinleave'], function(err, text, headers) end, 'POST', json.encode({username = name, embeds = embed}), { ['Content-Type'] = 'application/json' })
-    end
-end
-
 -------------------------------------------
 -- Functions
 -------------------------------------------
@@ -43,7 +22,7 @@ local function GiveStarterItems(source)
 end
 
 RegisterNetEvent('rsg-multicharacter:server:disconnect', function(source)
-    DropPlayer(source, "You have disconnected from HDRP RedM")
+    DropPlayer(source, "You have disconnected from RSG RedM")
 end)
 
 RegisterNetEvent('rsg-multicharacter:server:loadUserData', function(cData, skindata)
@@ -57,9 +36,7 @@ RegisterNetEvent('rsg-multicharacter:server:loadUserData', function(cData, skind
         else
             TriggerClientEvent('rsg-appearance:client:OpenCreator', src, false, true)
         end
-        sendToDiscord(16753920,	"Login | GAME", "Name:** "..cData.charinfo.firstname.." "..cData.charinfo.lastname.. "**Ingame ID:** "..cData.cid.."\n**ENTRY TO PLAY",	"Log Multicharacter for RSG Framework",  "load")
-        sendToDiscord(16753920,	"Login | GAME", "Citizenid:** "..cData.citizenid.."**Ingame ID:** "..cData.cid.. "\n**Name:** "..cData.charinfo.firstname.." "..cData.charinfo.lastname.. "\n**ENTRY TO PLAY** ".. GetPlayerName(src) .. "** ("..cData.citizenid.." | "..src..")**",	"Log Multicharacter for RSG Framework", "join")
-        -- TriggerEvent('rsg-log:server:CreateLog', 'joinleave', 'Player Joined Server', 'green', '**' .. GetPlayerName(src) .. '** joined the server..')
+        TriggerEvent('rsg-log:server:CreateLog', 'joinleave', 'Player Joined Server', 'green', '**' .. GetPlayerName(src) .. '** joined the server..')
     end
 end)
 
@@ -127,17 +104,10 @@ RSGCore.Functions.CreateCallback("rsg-multicharacter:server:getAppearance", func
     end)
 end)
 
-RSGCore.Commands.Add("logout", "Cerrar sesion del personaje (Admin Only)", {}, false, function(source)
+RSGCore.Commands.Add("logout", "Logout of Character (Admin Only)", {}, false, function(source)
     RSGCore.Player.Logout(source)
     TriggerClientEvent('rsg-multicharacter:client:chooseChar', source)
 end, 'admin')
-
-if Config.EnablePlayerOut then
-    RSGCore.Commands.Add("playerout", "Cerrar sesion del personaje", {}, false, function(source)
-        RSGCore.Player.Logout(source)
-        TriggerClientEvent('rsg-multicharacter:client:chooseChar', source)
-    end)
-end
 
 RSGCore.Commands.Add("closeNUI", "Close Multi NUI", {}, false, function(source)
     TriggerClientEvent('rsg-multicharacter:client:closeNUI', source)
