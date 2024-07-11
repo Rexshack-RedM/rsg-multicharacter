@@ -15,7 +15,7 @@ $(document).ready(function (){
                 $(".welcomescreen").fadeIn(150);
                 qbMultiCharacters.resetAll();
 
-                var originalText = "Recibiendo datos..";
+                var originalText = "Retrieving player data..";
                 var loadingProgress = 0;
                 var loadingDots = 0;
                 $("#loading-text").html(originalText);
@@ -24,15 +24,15 @@ $(document).ready(function (){
                     loadingDots++;
                     loadingProgress++;
                     if (loadingProgress == 3) {
-                        originalText = "..validando.."
+                        originalText = "..Validating player data.."
                         $("#loading-text").html(originalText);
                     }
                     if (loadingProgress == 4) {
-                        originalText = "..cargando personajes.."
+                        originalText = "..Retrieving characters.."
                         $("#loading-text").html(originalText);
                     }
                     if (loadingProgress == 6) {
-                        originalText = "..sesion iniciada"
+                        originalText = "..Validating characters"
                         $("#loading-text").html(originalText);
                     }
                     if(loadingDots == 4) {
@@ -47,7 +47,7 @@ $(document).ready(function (){
                     setTimeout(function(){
                         clearInterval(DotsInterval);
                         loadingProgress = 0;
-                        originalText = "Recibiendo datos..";
+                        originalText = "Retrieving data";
                         $(".welcomescreen").fadeOut(150);
                         qbMultiCharacters.fadeInDown('.character-info', '20%', 400);
                         qbMultiCharacters.fadeInDown('.characters-list', '20%', 400);
@@ -90,13 +90,11 @@ function setupCharInfo(cData) {
         var gender = "Man"
         if (cData.charinfo.gender == 1) { gender = "Woman" }
         $('.character-info-valid').html(
-        '<div class="character-info-box"><span id="info-label">Nombre:: </span><span class="char-info-js">'+cData.charinfo.firstname+' '+cData.charinfo.lastname+'</span></div>' +
-        '<div class="character-info-box"><span id="info-label">Fecha: </span><span class="char-info-js">'+cData.charinfo.birthdate+'</span></div>' +
-        '<div class="character-info-box"><span id="info-label">Estado: </span><span class="char-info-js">'+cData.charinfo.nationality+'</span></div>' +
-        '<div class="character-info-box"><span id="info-label">Trabajo: </span><span class="char-info-js">'+cData.job.label+'</span></div>' +
-        '<div class="character-info-box"><span id="info-label">Cash: </span><span class="char-info-js">&#36; '+cData.money.cash+'</span></div>' +
-        '<div class="character-info-box"><span id="info-label">XP: </span><span class="char-info-js">&#36; '+cData.money.experience+'</span></div>' +
-        '<div class="character-info-box"><span id="info-label">GC: </span><span class="char-info-js">&#36; '+cData.money.goldcoin+'</span></div>');
+        '<div class="character-info-box"><span id="info-label">Name: </span><span class="char-info-js">'+cData.charinfo.firstname+' '+cData.charinfo.lastname+'</span></div>' +
+        '<div class="character-info-box"><span id="info-label">Birth date: </span><span class="char-info-js">'+cData.charinfo.birthdate+'</span></div>' +
+        '<div class="character-info-box"><span id="info-label">Nationality: </span><span class="char-info-js">'+cData.charinfo.nationality+'</span></div>' +
+        '<div class="character-info-box"><span id="info-label">Job: </span><span class="char-info-js">'+cData.job.label+'</span></div>' +
+        '<div class="character-info-box"><span id="info-label">Cash: </span><span class="char-info-js">&#36; '+cData.money.cash+'</span></div>');
     }
 }
 
@@ -129,7 +127,7 @@ $(document).on('click', '.character', function(e) {
         if ((selectedChar).data('cid') == "") {
             $(selectedChar).addClass("char-selected");
             setupCharInfo('empty')
-            $("#play-text").html("Crear personaje");
+            $("#play-text").html("Create");
             $("#play").css({"display":"block"});
             $("#delete").css({"display":"none"});
             $.post('https://rsg-multicharacter/cDataPed', JSON.stringify({
@@ -138,8 +136,8 @@ $(document).on('click', '.character', function(e) {
         } else {
             $(selectedChar).addClass("char-selected");
             setupCharInfo($(this).data('cData'))
-            $("#play-text").html("Jugar");
-            $("#delete-text").html("Eliminar");
+            $("#play-text").html("Play");
+            $("#delete-text").html("Delete");
             $("#play").css({"display":"block"});
             $("#delete").css({"display":"block"});
             $.post('https://rsg-multicharacter/cDataPed', JSON.stringify({
@@ -222,11 +220,11 @@ $(document).on('click', '#cancel-delete', function(e){
 });
 
 function setCharactersList() {
-    var htmlResult = '<div class="character-list-header"><p>Personajes</p></div>'
+    var htmlResult = '<div class="character-list-header"><p>My Characters</p></div>'
     for (let i = 1; i <= NChar; i++) {
         htmlResult += '<div class="character" id="char-'+ i +'" data-cid=""><span id="slot-name">Empty Slot<span id="cid"></span></span></div>'
     }
-    htmlResult += '<div class="character-btn" id="play"><p id="play-text">Selecciona un personaje</p></div><div class="character-btn" id="delete"><p id="delete-text">Selecciona un personaje</p></div>'
+        htmlResult += '<div class="character-btn" id="play"><p id="play-text">Select a character</p></div><div class="character-btn" id="delete"><p id="delete-text">Select a character</p></div>'
     $('.characters-list').html(htmlResult)
 }
 
@@ -236,7 +234,7 @@ function refreshCharacters() {
         htmlResult += '<div class="character" id="char-'+ i +'" data-cid=""><span id="slot-name">Empty Slot<span id="cid"></span></span></div>'
     }
 
-    htmlResult += '<div class="character-btn" id="play"><p id="play-text">Selecciona un personaje</p></div><div class="character-btn" id="delete"><p id="delete-text">Selecciona un personaje</p></div>'
+        htmlResult += '<div class="character-btn" id="play"><p id="play-text">Select a character</p></div><div class="character-btn" id="delete"><p id="delete-text">Select a character</p></div>'
     $('.characters-list').html(htmlResult)
 
     setTimeout(function(){
