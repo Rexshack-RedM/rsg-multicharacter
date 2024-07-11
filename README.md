@@ -1,4 +1,4 @@
-# Rexshack Gaming Version
+# Sadicius Gaming Version
  
 # credits
 - original resouce created by : https://github.com/qbcore-redm-framework
