@@ -281,3 +281,16 @@ CreateThread(function()
         end
     end)
 end)
+
+-- unstick player from start location
+CreateThread(function()
+    exports['rsg-core']:createPrompt('unstick', vector3(-549.77, -3778.38, 238.60), RSGCore.Shared.Keybinds['J'], 'Set Me Free!', {
+        type = 'client',
+        event = 'rsg-multicharacter:client:unstick',
+    })
+end)
+
+RegisterNetEvent('rsg-multicharacter:client:unstick', function()
+    SetEntityCoordsNoOffset(cache.ped, vector3(-169.47, 629.38, 114.03), true, true, true)
+    FreezeEntityPosition(cache.ped, false)
+end)
