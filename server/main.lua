@@ -51,6 +51,7 @@ RegisterNetEvent('rsg-multicharacter:server:createCharacter', function(data)
 end)
 
 RegisterNetEvent('rsg-multicharacter:server:deleteCharacter', function(citizenid)
+	MySQL.update('DELETE FROM playerskins WHERE citizenid = ?', {citizenid})
     RSGCore.Player.DeleteCharacter(source, citizenid)
 end)
 
