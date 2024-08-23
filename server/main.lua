@@ -1,6 +1,8 @@
 local RSGCore = exports['rsg-core']:GetCoreObject()
 
+-------------------------------------------
 -- Functions
+-------------------------------------------
 local identifierUsed = GetConvar('es_identifierUsed', 'steam')
 local foundResources = {}
 -- Functions
