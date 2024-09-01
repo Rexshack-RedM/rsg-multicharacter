@@ -4,6 +4,16 @@ local selectingChar = true
 local isChossing = false
 local DataSkin = nil
 
+CreateThread(function()
+    while true do
+        Wait(0)
+        if NetworkIsSessionStarted() then
+            TriggerEvent('rsg-multicharacter:client:chooseChar')
+            return
+        end
+    end
+end)
+
 local cams = {
     {
         type = "customization",
@@ -261,25 +271,6 @@ end)
 RegisterNUICallback('removeCharacter', function(data) -- Removing a char
     TriggerServerEvent('rsg-multicharacter:server:deleteCharacter', data.citizenid)
     TriggerEvent('rsg-multicharacter:client:chooseChar')
-end)
-
--- Threads
-CreateThread(function()
-
-    repeat Wait(1000) until GetIsLoadingScreenActive()
-
-    RequestImap(-1699673416)
-    RequestImap(1679934574)
-    RequestImap(183712523)
-
-    TriggerEvent('rsg-multicharacter:client:chooseChar')
-    isChossing = true
-        CreateThread(function()
-            while isChossing do
-            Wait(0)
-            Citizen.InvokeNative(0xF1622CE88A1946FB)
-        end
-    end)
 end)
 
 -- unstick player from start location

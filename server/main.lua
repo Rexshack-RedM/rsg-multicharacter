@@ -1,11 +1,5 @@
 local RSGCore = exports['rsg-core']:GetCoreObject()
 
-AddEventHandler('playerJoining', function(source)
-    local src = source
-    Citizen.Wait(1000) -- Give some time for other resources to initialize
-    TriggerClientEvent('rsg-multicharacter:client:chooseChar', src)
-end)
-
 -- Functions
 local identifierUsed = GetConvar('es_identifierUsed', 'steam')
 local foundResources = {}
