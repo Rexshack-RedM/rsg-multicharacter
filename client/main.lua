@@ -8,6 +8,7 @@ CreateThread(function()
     while true do
         Wait(0)
         if NetworkIsSessionStarted() then
+            Wait(500)
             TriggerEvent('rsg-multicharacter:client:chooseChar')
             return
         end
