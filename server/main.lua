@@ -7,8 +7,8 @@ local foundResources = {}
 
 -- starter items
 local StarterItems = {
-    ['consumable_bread_roll'] = { amount = 5, item = 'consumable_bread_roll' },
-    ['canteen100']            = { amount = 1, item = 'canteen100' }
+    ['consumable_bread_roll']     = { amount = 5, item = 'consumable_bread_roll' },
+    ['consumable_water_filtered'] = { amount = 5, item = 'consumable_water_filtered' }
 }
 
 -- give starter items
