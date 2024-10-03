@@ -5,16 +5,10 @@ local identifierUsed = GetConvar('es_identifierUsed', 'steam')
 local foundResources = {}
 -- Functions
 
--- starter items
-local StarterItems = {
-    ['consumable_bread_roll']     = { amount = 5, item = 'consumable_bread_roll' },
-    ['consumable_water_filtered'] = { amount = 5, item = 'consumable_water_filtered' }
-}
-
 -- give starter items
 local function GiveStarterItems(source)
     local Player = RSGCore.Functions.GetPlayer(source)
-    for k, v in pairs(StarterItems) do
+    for k, v in pairs(RSGCore.Shared.StarterItems) do
         Player.Functions.AddItem(v.item, v.amount)
     end
 end
