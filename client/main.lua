@@ -276,10 +276,12 @@ end)
 
 -- unstick player from start location
 CreateThread(function()
-    exports['rsg-core']:createPrompt('unstick', vector3(-549.77, -3778.38, 238.60), RSGCore.Shared.Keybinds['J'], 'Set Me Free!', {
-        type = 'client',
-        event = 'rsg-multicharacter:client:unstick',
-    })
+    if LocalPlayer.state['isLoggedIn'] then
+        exports['rsg-core']:createPrompt('unstick', vector3(-549.77, -3778.38, 238.60), RSGCore.Shared.Keybinds['J'], 'Set Me Free!', {
+            type = 'client',
+            event = 'rsg-multicharacter:client:unstick',
+        })
+    end
 end)
 
 RegisterNetEvent('rsg-multicharacter:client:unstick', function()
