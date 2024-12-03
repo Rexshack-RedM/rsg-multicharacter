@@ -3,6 +3,20 @@ local RSGCore = exports['rsg-core']:GetCoreObject()
 -- Functions
 local identifierUsed = GetConvar('es_identifierUsed', 'steam')
 local foundResources = {}
+
+-- generate horseid
+local function GenerateHorseid()
+    local UniqueFound = false
+    local horseid = nil
+    while not UniqueFound do
+        horseid = tostring(RSGCore.Shared.RandomStr(3) .. RSGCore.Shared.RandomInt(3)):upper()
+        local result = MySQL.prepare.await('SELECT COUNT(*) as count FROM player_horses WHERE horseid = ?', { horseid })
+        if result == 0 then
+            UniqueFound = true
+        end
+    end
+    return horseid
+end
 -- Functions
 
 -- give starter items
@@ -10,6 +24,22 @@ local function GiveStarterItems(source)
     local Player = RSGCore.Functions.GetPlayer(source)
     for k, v in pairs(RSGCore.Shared.StarterItems) do
         Player.Functions.AddItem(v.item, v.amount)
+    end
+    if Config.StarterHorse then
+        local horseid = GenerateHorseid()
+        local horsesex = {'male', 'female'}
+        local randomSex = math.random(1, #horsesex)
+        local randomHorseSex = horsesex[randomSex]
+        MySQL.insert('INSERT INTO player_horses(stable, citizenid, horseid, name, horse, gender, active, born) VALUES(@stable, @citizenid, @horseid, @name, @horse, @gender, @active, @born)', {
+            ['@stable'] = Config.StarterHorseStable,
+            ['@citizenid'] = Player.PlayerData.citizenid,
+            ['@horseid'] = horseid,
+            ['@name'] = Config.StarterHorseName,
+            ['@horse'] = Config.StarterHorseModel,
+            ['@gender'] = randomHorseSex,
+            ['@active'] = true,
+            ['@born'] = os.time()
+        })
     end
 end
 
