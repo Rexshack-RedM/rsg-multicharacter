@@ -1,4 +1,14 @@
-@import url('https://db.onlinewebfonts.com/c/ab21a97b9cae2e116d8d1473baefc9f0?family=RDR+Lino+Regular');
+@font-face {
+    font-family: 'RDR Lino Regular';
+    src: url('../html/RDRLino-Regular.ttf') format('truetype'); /* Adjust path if necessary */
+    font-weight: normal;
+    font-style: normal;
+}
+
+body {
+    font-family: 'RDR Lino Regular', sans-serif;
+}
+
 .container {
     display: none;
 }
@@ -15,7 +25,7 @@
     text-align: center;
     color: #ffff;
     line-height: 24px;
-    font-family: "RDR Lino Regular";
+    font-family: 'RDR Lino Regular', sans-serif;
 }
 
 .characters-list {
@@ -50,7 +60,7 @@
     text-align: center;
     font-size: 2vh;
     margin-top: 3.1vh;
-    font-family: "RDR Lino Regular";
+    font-family: 'RDR Lino Regular', sans-serif;
     letter-spacing: .1vh;
     font-weight: 900;
     color: #ffffff;
@@ -62,7 +72,7 @@
     width: 100%;
     height: 75px;
     margin-top: 15px;
-    font-family: "RDR Lino Regular";
+    font-family: 'RDR Lino Regular', sans-serif;
     border-bottom: 4px solid #74aa3200;
     transition: .1s linear;
     border-radius: .3vh;
@@ -74,7 +84,7 @@
     font-weight: 900;
     text-transform: uppercase;
     letter-spacing: .1vh;
-    font-family: "RDR Lino Regular";
+    font-family: 'RDR Lino Regular', sans-serif;
 }
 
 #cid {
@@ -100,7 +110,7 @@
     font-size: 17px;
     line-height: 80px;
     left: 20px;
-    font-family: "RDR Lino Regular";
+    font-family: 'RDR Lino Regular', sans-serif;
 }
 
 .character-btn {
@@ -119,7 +129,7 @@
     color: #ffff;
     letter-spacing: .1vh;
     text-align: center;
-    font-family: "RDR Lino Regular";
+    font-family: 'RDR Lino Regular', sans-serif;
     font-size: 2vh;
     text-transform: uppercase;
     line-height: 5vh;
@@ -178,7 +188,7 @@
     text-transform: uppercase;
     position: absolute;
     font-size: 2vh;
-    font-family: "RDR Lino Regular";
+    font-family: 'RDR Lino Regular', sans-serif;
     color: #ffffff;
     left: -5vh;
     letter-spacing: .1vh;
@@ -190,19 +200,19 @@
     position: absolute;
     left: 50%;
     font-weight: 900;
-    font-family: "RDR Lino Regular";
+    font-family: 'RDR Lino Regular', sans-serif;
     text-transform: uppercase;
 }
 
 #info-label {
     margin-left: 10px;
     font-weight: 900;
-    font-family: "RDR Lino Regular";
+    font-family: 'RDR Lino Regular', sans-serif;
     text-transform: uppercase;
 }
 
 #no-char {
-    font-family: "RDR Lino Regular";
+    font-family: 'RDR Lino Regular', sans-serif;
     position: relative;
     color: #ffff;
     font-size: 16px;
@@ -230,7 +240,7 @@
     width: 100%;
     height: 2.9vh;
     font-weight: 900;
-    font-family: "RDR Lino Regular";
+    font-family: 'RDR Lino Regular', sans-serif;
     text-transform: uppercase;
     margin-bottom: 12px;
 }
@@ -247,7 +257,7 @@
     margin-right: auto;
     
     padding: 30px;
-    font-family: "RDR Lino Regular";
+    font-family: 'RDR Lino Regular', sans-serif;
     color: #000000;
     overflow: visible !important;
 
@@ -265,14 +275,14 @@
     text-align: left;
     font-size: 2vh;
     line-height: 29px;
-    font-family: "RDR Lino Regular";
+    font-family: 'RDR Lino Regular', sans-serif;
     font-weight: 900;
     text-transform: uppercase;
     overflow: visible !important;
 }
 
 .characters-delete-block-header>p {
-    font-family: "RDR Lino Regular";
+    font-family: 'RDR Lino Regular', sans-serif;
     overflow: visible !important;
 }
 
@@ -318,7 +328,7 @@
     color: #ffff;
     text-align: center;
     padding-top: 1vh;
-    font-family: "RDR Lino Regular";
+    font-family: 'RDR Lino Regular', sans-serif;
     overflow: visible !important;
     font-weight: 900;
     text-transform: uppercase;
@@ -328,7 +338,7 @@
     color: #ffff;
     text-align: center;
     padding-top: 1vh;
-    font-family: "RDR Lino Regular";
+    font-family: 'RDR Lino Regular', sans-serif;
     overflow: visible !important;
     font-weight: 900;
     text-transform: uppercase;
@@ -347,7 +357,7 @@
 	background-size: 100% 100%;
     border-radius: .8vh;
     padding: 30px;
-    font-family: "RDR Lino Regular";
+    font-family: 'RDR Lino Regular', sans-serif;
 }
 
 
@@ -399,7 +409,7 @@ i#close-reg {
     font-weight: 900;
     padding: 4px;
     border-radius: .3vh;
-    font-family: "RDR Lino Regular";
+    font-family: 'RDR Lino Regular', sans-serif;
     text-align: center;
     transition: all 0.2s ease-in-out;
     cursor: text;
@@ -419,7 +429,7 @@ select {
     max-width: 100%;
     padding: 4px;
     border-radius: .3vh;
-    font-family: "RDR Lino Regular";
+    font-family: 'RDR Lino Regular', sans-serif;
     text-align-last: center;
     -webkit-appearance: none;
     -moz-appearance: none;
@@ -481,7 +491,7 @@ input[type="date"]::-webkit-clear-button {
 #birthdate {
     color: #ffff;
     text-align: center;
-    font-family: "RDR Lino Regular";
+    font-family: 'RDR Lino Regular', sans-serif;
 }
 
 .character-reg-btn {
@@ -502,7 +512,7 @@ input[type="date"]::-webkit-clear-button {
     line-height: 4vh;
     color: #ffff;
     text-transform: uppercase;
-    font-family: "RDR Lino Regular";
+    font-family: 'RDR Lino Regular', sans-serif;
     font-size: 2vh;
     font-weight: 900;
 }
@@ -523,7 +533,7 @@ input[type="date"]::-webkit-clear-button {
 .loading-rondje > p {
     color: white;
     margin-top: 1vh;
-    font-family: "RDR Lino Regular";
+    font-family: 'RDR Lino Regular', sans-serif;
     text-shadow: 1px 1px 0px #00000085;
 }
 

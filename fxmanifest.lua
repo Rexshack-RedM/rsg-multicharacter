@@ -25,6 +25,7 @@ server_scripts {
 files {
     'html/index.html',
     'html/style.css',
+    'html/RDRLino-Regular.ttf', 
     'html/reset.css',
     'html/script.js',
     'html/profanity.js',
