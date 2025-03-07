@@ -138,7 +138,7 @@ RegisterNetEvent('rsg-multicharacter:client:chooseChar', function()
 end)
 
 -- NUI
-RegisterNUICallback('cDataPed', function(data) -- Visually seeing the char
+RegisterNUICallback('cDataPed', function(data, cb) -- Visually seeing the char
     local cData = data.cData
     SetEntityAsMissionEntity(charPed, true, true)
     DeleteEntity(charPed)
@@ -205,19 +205,22 @@ RegisterNUICallback('cDataPed', function(data) -- Visually seeing the char
             SetBlockingOfNonTemporaryEvents(charPed, true)
         end)
     end
+    cb('ok')
 end)
 
-RegisterNUICallback('closeUI', function()
+RegisterNUICallback('closeUI', function(data, cb)
     openCharMenu(false)
+    cb('ok')
 end)
 
-RegisterNUICallback('disconnectButton', function()
+RegisterNUICallback('disconnectButton', function(data, cb)
     SetEntityAsMissionEntity(charPed, true, true)
     DeleteEntity(charPed)
     TriggerServerEvent('rsg-multicharacter:server:disconnect')
+    cb('ok')
 end)
 
-RegisterNUICallback('selectCharacter', function(data)
+RegisterNUICallback('selectCharacter', function(data, cb)
     selectingChar = false
     local cData = data.cData
     if DataSkin ~= nil then
@@ -241,22 +244,25 @@ RegisterNUICallback('selectCharacter', function(data)
         DeleteEntity(charPed)
         SetModelAsNoLongerNeeded(model)
     end
+    cb('ok')
 end)
 
-RegisterNUICallback('setupCharacters', function() -- Present char info
+RegisterNUICallback('setupCharacters', function(data, cb) -- Present char info
     RSGCore.Functions.TriggerCallback("rsg-multicharacter:server:setupCharacters", function(result)
         SendNUIMessage({
             action = "setupCharacters",
             characters = result
         })
     end)
+    cb('ok')
 end)
 
-RegisterNUICallback('removeBlur', function()
+RegisterNUICallback('removeBlur', function(data, cb)
     SetTimecycleModifier('default')
+    cb('ok')
 end)
 
-RegisterNUICallback('createNewCharacter', function(data) -- Creating a char
+RegisterNUICallback('createNewCharacter', function(data, cb) -- Creating a char
     selectingChar = false
     DoScreenFadeOut(150)
     Wait(200)
@@ -267,11 +273,13 @@ RegisterNUICallback('createNewCharacter', function(data) -- Creating a char
     DoScreenFadeIn(1000)
     FreezeEntityPosition(PlayerPedId(), false)
     TriggerEvent('rsg-appearance:client:OpenCreator', data)
+    cb('ok')
 end)
 
-RegisterNUICallback('removeCharacter', function(data) -- Removing a char
+RegisterNUICallback('removeCharacter', function(data, cb) -- Removing a char
     TriggerServerEvent('rsg-multicharacter:server:deleteCharacter', data.citizenid)
     TriggerEvent('rsg-multicharacter:client:chooseChar')
+    cb('ok')
 end)
 
 -- unstick player from start location
