@@ -218,6 +218,8 @@ body {
     font-size: 16px;
     top: 30%;
     text-align: center;
+    display: block;
+    width: 100%;
 }
 
 .char-info-titel {
