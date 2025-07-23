@@ -3,6 +3,16 @@ local RSGCore = exports['rsg-core']:GetCoreObject()
 -- Functions
 local identifierUsed = GetConvar('es_identifierUsed', 'steam')
 local foundResources = {}
+local hasDonePreloading = {}
+
+AddEventHandler('RSGCore:Server:PlayerLoaded', function(Player)
+    Wait(1000) -- 1 second should be enough to do the preloading in other resources
+    hasDonePreloading[Player.PlayerData.source] = true
+end)
+
+AddEventHandler('RSGCore:Server:OnPlayerUnload', function(src)
+    hasDonePreloading[src] = false
+end)
 
 -- generate horseid
 local function GenerateHorseid()
@@ -43,14 +53,18 @@ local function GiveStarterItems(source)
     end
 end
 
-RegisterNetEvent('rsg-multicharacter:server:disconnect', function(source)
-    DropPlayer(source, "You have disconnected from RSG RedM")
+RegisterNetEvent('rsg-multicharacter:server:disconnect', function()
+    local src = source
+    DropPlayer(src, locale('print_sv_disconnect'))
 end)
 
 RegisterNetEvent('rsg-multicharacter:server:loadUserData', function(cData, skindata)
     local src = source
     if RSGCore.Player.Login(src, cData.citizenid) then
         print('^2[rsg-core]^7 '..GetPlayerName(src)..' (Citizen ID: '..cData.citizenid..') has succesfully loaded!')
+        repeat
+            Wait(10)
+        until hasDonePreloading[src]
         RSGCore.Commands.Refresh(src)
         TriggerClientEvent("rsg-multicharacter:client:closeNUI", src)
         if not skindata then
@@ -68,6 +82,9 @@ RegisterNetEvent('rsg-multicharacter:server:createCharacter', function(data)
     newData.cid = data.cid
     newData.charinfo = data
     if RSGCore.Player.Login(src, false, newData) then
+        repeat
+            Wait(10)
+        until hasDonePreloading[src]
         RSGCore.ShowSuccess(GetCurrentResourceName(), GetPlayerName(src)..' has succesfully loaded!')
         RSGCore.Commands.Refresh(src)
         GiveStarterItems(src)
@@ -75,14 +92,16 @@ RegisterNetEvent('rsg-multicharacter:server:createCharacter', function(data)
 end)
 
 RegisterNetEvent('rsg-multicharacter:server:deleteCharacter', function(citizenid)
+    local src = source
     MySQL.update('DELETE FROM playerskins WHERE citizenid = ?', {citizenid})
-    RSGCore.Player.DeleteCharacter(source, citizenid)
+    RSGCore.Player.DeleteCharacter(src, citizenid)
 end)
 
 -- Callbacks
 
 RSGCore.Functions.CreateCallback("rsg-multicharacter:server:setupCharacters", function(source, cb)
-    local license = RSGCore.Functions.GetIdentifier(source, 'license')
+    local src = source
+    local license = RSGCore.Functions.GetIdentifier(src, 'license')
     local plyChars = {}
     MySQL.Async.fetchAll('SELECT * FROM players WHERE license = @license', {['@license'] = license}, function(result)
         for i = 1, (#result), 1 do
@@ -96,7 +115,8 @@ RSGCore.Functions.CreateCallback("rsg-multicharacter:server:setupCharacters", fu
 end)
 
 RSGCore.Functions.CreateCallback("rsg-multicharacter:server:GetNumberOfCharacters", function(source, cb)
-    local license = RSGCore.Functions.GetIdentifier(source, 'license')
+    local src = source
+    local license = RSGCore.Functions.GetIdentifier(src, 'license')
     local numOfChars = 0
     if next(Config.PlayersNumberOfCharacters) then
         for i, v in pairs(Config.PlayersNumberOfCharacters) do
@@ -128,10 +148,12 @@ RSGCore.Functions.CreateCallback("rsg-multicharacter:server:getAppearance", func
 end)
 
 RSGCore.Commands.Add("logout", "Logout of Character (Admin Only)", {}, false, function(source)
-    RSGCore.Player.Logout(source)
-    TriggerClientEvent('rsg-multicharacter:client:chooseChar', source)
+    local src = source
+    RSGCore.Player.Logout(src)
+    TriggerClientEvent('rsg-multicharacter:client:chooseChar', src)
 end, 'admin')
 
 RSGCore.Commands.Add("closeNUI", "Close Multi NUI", {}, false, function(source)
-    TriggerClientEvent('rsg-multicharacter:client:closeNUI', source)
+    local src = source
+    TriggerClientEvent('rsg-multicharacter:client:closeNUI', src)
 end, 'user')
