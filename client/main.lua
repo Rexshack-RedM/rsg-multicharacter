@@ -1,8 +1,16 @@
 local RSGCore = exports['rsg-core']:GetCoreObject()
+
+local cached_player_skins = {}
+local randommodels = { "mp_male", "mp_female"}
+
 local charPed = nil
-local selectingChar = true
-local isChossing = false
+local loadScreenCheckState = false
+
 local DataSkin = nil
+local cam = nil
+local fixedCam = nil
+local spawnThread = nil
+local selectingChar = true
 
 CreateThread(function()
     while true do
@@ -38,29 +46,86 @@ local cams = {
     }
 }
 
-local function baseModel(sex)
-    if (sex == 'mp_male') then
-        ApplyShopItemToPed(charPed, 0x158cb7f2, true, true, true); --head
-        ApplyShopItemToPed(charPed, 361562633,  true, true, true); --hair
-        ApplyShopItemToPed(charPed, 62321923,   true, true, true); --hand
-        ApplyShopItemToPed(charPed, 3550965899, true, true, true); --legs
-        ApplyShopItemToPed(charPed, 612262189,  true, true, true); --Eye
-        ApplyShopItemToPed(charPed, 319152566,  true, true, true); --
-        ApplyShopItemToPed(charPed, 0x2CD2CB71, true, true, true); -- shirt
-        ApplyShopItemToPed(charPed, 0x151EAB71, true, true, true); -- bots
-        ApplyShopItemToPed(charPed, 0x1A6D27DD, true, true, true); -- pants
-    else
-        ApplyShopItemToPed(charPed, 0x1E6FDDFB, true, true, true); -- head
-        ApplyShopItemToPed(charPed, 272798698,  true, true, true); -- hair
-        ApplyShopItemToPed(charPed, 869083847,  true, true, true); -- Eye
-        ApplyShopItemToPed(charPed, 736263364,  true, true, true); -- hand
-        ApplyShopItemToPed(charPed, 0x193FCEC4, true, true, true); -- shirt
-        ApplyShopItemToPed(charPed, 0x285F3566, true, true, true); -- pants
-        ApplyShopItemToPed(charPed, 0x134D7E03, true, true, true); -- bots
+local function loadModel(model)
+    RequestModel(model)
+    while not HasModelLoaded(model) do
+        Wait(0)
     end
 end
 
+local function cleanPed(ped)
+    if DoesEntityExist(ped) then
+        local model = IsPedMale(ped) and 'mp_male' or 'mp_female'
+        SetEntityAsMissionEntity(ped, true, true)
+        DeleteEntity(ped)
+        SetModelAsNoLongerNeeded(model)
+        charPed = nil
+    end
+end
+
+local function baseModel(sex)
+    local partsBody = (sex == 'mp_male') and {
+        {0x158cb7f2, true}, --head
+        {361562633, true},  --hair
+        {62321923, true},   --hand
+        {3550965899, true}, --legs
+        {612262189, true},  --Eye
+        {319152566, true},
+        {0x2CD2CB71, true}, -- shirt
+        {0x151EAB71, true}, -- bots
+        {0x1A6D27DD, true}  -- pants
+    } or {
+        {0x1E6FDDFB, true}, -- head
+        {272798698, true},  -- hair
+        {869083847, true},  -- Eye
+        {736263364, true},  -- hand
+        {0x193FCEC4, true}, -- shirt
+        {0x285F3566, true}, -- pants
+        {0x134D7E03, true}  -- bots
+    }
+    for _, part in ipairs(partsBody) do
+        if charPed and DoesEntityExist(charPed) then
+            ApplyShopItemToPed(charPed, part[1], part[2], true, true)
+        end
+    end
+end
+
+local function initializePedModel(appearanceData, coords, heading)
+    if spawnThread then TerminateThread(spawnThread) end
+    spawnThread = CreateThread(function()
+        local modelName
+        local modelHash
+        local skinTable, clothesTable
+        if appearanceData and appearanceData.skin then
+            DataSkin = appearanceData.skin
+            modelName = (tonumber(appearanceData.skin.sex) == 1) and "mp_male" or "mp_female"
+            skinTable = appearanceData.skin
+            clothesTable = appearanceData.clothes or {}
+        else
+            modelName = randommodels[math.random(#randommodels)]
+        end
+        modelHash = joaat(modelName)
+
+        loadModel(modelHash)
+        charPed = CreatePed(modelHash, coords.x, coords.y, coords.z, heading, false, false)
+
+        FreezeEntityPosition(charPed, false)
+        SetEntityInvincible(charPed, true)
+        SetBlockingOfNonTemporaryEvents(charPed, true)
+
+        while not IsPedReadyToRender(charPed) do Wait(1) end
+
+        if skinTable then
+            exports['rsg-appearance']:ApplySkinMultiChar(skinTable, charPed, clothesTable)
+        else
+            baseModel(modelName)
+        end
+        Wait(50)
+    end)
+end
+
 local function skyCam(bool)
+    exports.weathersync:setMyTime(0, 0, 0, 0, true) -- SYNC OFF
     if bool then
         DoScreenFadeIn(1000)
         SetTimecycleModifier('hud_def_blur')
@@ -69,19 +134,21 @@ local function skyCam(bool)
         SetCamCoord(cam, -555.925, -3778.709, 238.597)
         SetCamRot(cam, -20.0, 0.0, 83)
         SetCamActive(cam, true)
-        RenderScriptCams(true, false, 1, true, true)
         fixedCam = CreateCam("DEFAULT_SCRIPTED_CAMERA")
         SetCamCoord(fixedCam, -561.206, -3776.224, 239.597)
         SetCamRot(fixedCam, -20.0, 0, 270.0)
         SetCamActive(fixedCam, true)
         SetCamActiveWithInterp(fixedCam, cam, 3900, true, true)
+        RenderScriptCams(true, false, 1, true, true)
         Wait(3900)
-        DestroyCam(groundCam)
-        InterP = true
+        if cam and DoesCamExist(cam) then DestroyCam(cam) end
     else
         SetTimecycleModifier('default')
-        SetCamActive(cam, false)
-        DestroyCam(cam, true)
+        if cam and DoesCamExist(cam) then
+            SetCamActive(cam, false)
+            DestroyCam(cam, true)
+        end
+        cam = nil
         RenderScriptCams(false, false, 1, true, true)
         FreezeEntityPosition(PlayerPedId(), false)
     end
@@ -90,10 +157,18 @@ end
 -- Handlers
 
 AddEventHandler('onResourceStop', function(resource)
-    if (GetCurrentResourceName() == resource) then
-        DeleteEntity(charPed)
-        SetModelAsNoLongerNeeded(charPed)
-    end
+    if (GetCurrentResourceName() ~= resource) then return end
+    selectingChar = false
+    SetTimecycleModifier('default')
+    DestroyAllCams(true)
+    RenderScriptCams(false, false, 0, true, false)
+    cam = nil
+    fixedCam = nil
+    FreezeEntityPosition(PlayerPedId(), false)
+    cleanPed(charPed)
+    DataSkin = nil
+    SetNuiFocus(false, false)
+    SendNUIMessage({ action = "ui", toggle = false })
 end)
 
 local function openCharMenu(bool)
@@ -104,16 +179,18 @@ local function openCharMenu(bool)
             toggle = bool,
             nChar = result,
         })
-        choosingCharacter = bool
-        Wait(100)
         skyCam(bool)
+        Wait(100)
+        if not loadScreenCheckState then
+            ShutdownLoadingScreenNui()
+            loadScreenCheckState = true
+        end
     end)
 end
 
 RegisterNetEvent('rsg-multicharacter:client:closeNUI', function()
-    DeleteEntity(charPed)
+    cleanPed(charPed)
     SetNuiFocus(false, false)
-    isChossing = false
 end)
 
 RegisterNetEvent('rsg-multicharacter:client:chooseChar', function()
@@ -124,11 +201,10 @@ RegisterNetEvent('rsg-multicharacter:client:chooseChar', function()
     GetInteriorAtCoords(-558.9098, -3775.616, 238.59, 137.98)
     FreezeEntityPosition(PlayerPedId(), true)
     SetEntityCoords(PlayerPedId(), -562.91,-3776.25,237.63)
-    Wait(1500)
+    Wait(2500)
     ShutdownLoadingScreen()
     ShutdownLoadingScreenNui()
     Wait(10)
-    exports.weathersync:setMyTime(0, 0, 0, 0, true)
     openCharMenu(true)
     while selectingChar do
         Wait(1)
@@ -140,82 +216,36 @@ end)
 -- NUI
 RegisterNUICallback('cDataPed', function(data, cb) -- Visually seeing the char
     local cData = data.cData
-    SetEntityAsMissionEntity(charPed, true, true)
-    DeleteEntity(charPed)
+    cleanPed(charPed)
+
     if cData ~= nil then
-        RSGCore.Functions.TriggerCallback('rsg-multicharacter:server:getAppearance', function(appearance)
-            local skinTable = appearance.skin or {}
-            DataSkin = appearance.skin
-            local clothesTable = appearance.clothes or {}
-            local sex = tonumber(skinTable.sex) == 1 and `mp_male` or `mp_female`
-            if sex ~= nil then
-                CreateThread(function ()
-                    RequestModel(sex)
-                    while not HasModelLoaded(sex) do
-                        Wait(0)
-                    end
-                    charPed = CreatePed(sex, -558.91, -3776.25, 237.63, 90.0, false, false)
-                    FreezeEntityPosition(charPed, false)
-                    SetEntityInvincible(charPed, true)
-                    SetBlockingOfNonTemporaryEvents(charPed, true)
-                    while not IsPedReadyToRender(charPed) do
-                        Wait(1)
-                    end
-                    exports['rsg-appearance']:ApplySkinMultiChar(skinTable, charPed, clothesTable)
-                end)
-            else
-                CreateThread(function()
-                    local randommodels = {
-                        "mp_male",
-                        "mp_female",
-                    }
-                    local randomModel = randommodels[math.random(1, #randommodels)]
-                    local model = joaat(randomModel)
-                    RequestModel(model)
-                    while not HasModelLoaded(model) do
-                        Wait(0)
-                    end
-                    Wait(100)
-                    baseModel(randomModel)
-                    charPed = CreatePed(model, -558.91, -3776.25, 237.63, 90.0, false, false)
-                    FreezeEntityPosition(charPed, false)
-                    SetEntityInvincible(charPed, true)
-                    SetBlockingOfNonTemporaryEvents(charPed, true)
-                end)
-            end
-        end, cData.citizenid)
+        if cached_player_skins[cData.citizenid] then
+            initializePedModel(cached_player_skins[cData.citizenid], vector3(-558.91, -3776.25, 237.63), 90.0)
+            cb('ok')
+        else
+            RSGCore.Functions.TriggerCallback('rsg-multicharacter:server:getAppearance', function(appearance)
+                cached_player_skins[cData.citizenid] = appearance
+                initializePedModel(appearance, vector3(-558.91, -3776.25, 237.63), 90.0)
+                cb('ok')
+            end, cData.citizenid)
+        end
     else
-        CreateThread(function()
-            local randommodels = {
-                "mp_male",
-                "mp_female",
-            }
-            local randomModel = randommodels[math.random(1, #randommodels)]
-            local model = joaat(randomModel)
-            RequestModel(model)
-            while not HasModelLoaded(model) do
-                Wait(0)
-            end
-            charPed = CreatePed(model, -558.91, -3776.25, 237.63, 90.0, false, false)
-            Wait(100)
-            baseModel(randomModel)
-            FreezeEntityPosition(charPed, false)
-            SetEntityInvincible(charPed, true)
-            NetworkSetEntityInvisibleToNetwork(charPed, true)
-            SetBlockingOfNonTemporaryEvents(charPed, true)
-        end)
+        DataSkin = nil
+        initializePedModel(nil, vector3(-558.91, -3776.25, 237.63), 90.0)
+        cb('ok')
     end
-    cb('ok')
 end)
 
 RegisterNUICallback('closeUI', function(data, cb)
+    DoScreenFadeOut(10)
     openCharMenu(false)
+    TriggerServerEvent('rsg-multicharacter:server:loadUserData', data)
+    cleanPed(charPed)
     cb('ok')
 end)
 
 RegisterNUICallback('disconnectButton', function(data, cb)
-    SetEntityAsMissionEntity(charPed, true, true)
-    DeleteEntity(charPed)
+    cleanPed(charPed)
     TriggerServerEvent('rsg-multicharacter:server:disconnect')
     cb('ok')
 end)
@@ -227,28 +257,23 @@ RegisterNUICallback('selectCharacter', function(data, cb)
         DoScreenFadeOut(10)
         TriggerServerEvent('rsg-multicharacter:server:loadUserData', cData)
         openCharMenu(false)
-        local model = IsPedMale(charPed) and 'mp_male' or 'mp_female'
-        SetEntityAsMissionEntity(charPed, true, true)
-        DeleteEntity(charPed)
+        cleanPed(charPed)
         Wait(5000)
         TriggerServerEvent('rsg-appearance:server:LoadSkin')
         Wait(500)
         TriggerServerEvent('rsg-appearance:server:LoadClothes', 1)
-        SetModelAsNoLongerNeeded(model)
     else
         DoScreenFadeOut(10)
         TriggerServerEvent('rsg-multicharacter:server:loadUserData', cData, true)
         openCharMenu(false)
-        local model = IsPedMale(charPed) and 'mp_male' or 'mp_female'
-        SetEntityAsMissionEntity(charPed, true, true)
-        DeleteEntity(charPed)
-        SetModelAsNoLongerNeeded(model)
+        cleanPed(charPed)
     end
     cb('ok')
 end)
 
 RegisterNUICallback('setupCharacters', function(data, cb) -- Present char info
     RSGCore.Functions.TriggerCallback("rsg-multicharacter:server:setupCharacters", function(result)
+        cached_player_skins = {}
         SendNUIMessage({
             action = "setupCharacters",
             characters = result
@@ -263,21 +288,27 @@ RegisterNUICallback('removeBlur', function(data, cb)
 end)
 
 RegisterNUICallback('createNewCharacter', function(data, cb) -- Creating a char
+    local cData = data
     selectingChar = false
     DoScreenFadeOut(150)
+    local sex = cData.gender == 1 and `mp_male` or `mp_female`
     Wait(200)
-    TriggerEvent("rsg-multicharacter:client:closeNUI")
+    openCharMenu(false)
     DestroyAllCams(true)
-    SetModelAsNoLongerNeeded(charPed)
-    DeleteEntity(charPed)
+    cleanPed(charPed)
     DoScreenFadeIn(1000)
     FreezeEntityPosition(PlayerPedId(), false)
     TriggerEvent('rsg-appearance:client:OpenCreator', data)
+    Wait(500)
     cb('ok')
 end)
 
 RegisterNUICallback('removeCharacter', function(data, cb) -- Removing a char
     TriggerServerEvent('rsg-multicharacter:server:deleteCharacter', data.citizenid)
+    Wait(200)
+    RSGCore.Functions.TriggerCallback("rsg-multicharacter:server:setupCharacters", function(result)
+        SendNUIMessage({ action = "setupCharacters", characters = result })
+    end)
     TriggerEvent('rsg-multicharacter:client:chooseChar')
     cb('ok')
 end)
