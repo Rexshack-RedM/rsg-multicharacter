@@ -55,7 +55,7 @@ end
 
 RegisterNetEvent('rsg-multicharacter:server:disconnect', function()
     local src = source
-    DropPlayer(src, locale('print_sv_disconnect'))
+    DropPlayer(src, "You have disconnected from RSG RedM")
 end)
 
 RegisterNetEvent('rsg-multicharacter:server:loadUserData', function(cData, skindata)
