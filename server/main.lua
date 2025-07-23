@@ -1,8 +1,7 @@
 local RSGCore = exports['rsg-core']:GetCoreObject()
 
 -- Functions
-local identifierUsed = GetConvar('es_identifierUsed', 'steam')
-local foundResources = {}
+-- local identifierUsed = GetConvar('es_identifierUsed', 'steam')
 local hasDonePreloading = {}
 
 AddEventHandler('RSGCore:Server:PlayerLoaded', function(Player)
