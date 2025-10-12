@@ -194,6 +194,7 @@ RegisterNetEvent('rsg-multicharacter:client:closeNUI', function()
 end)
 
 RegisterNetEvent('rsg-multicharacter:client:chooseChar', function()
+    selectingChar = true
     SetEntityVisible(PlayerPedId(), false, false)
     SetNuiFocus(false, false)
     DoScreenFadeOut(10)
