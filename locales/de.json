@@ -1,0 +1,31 @@
+{
+    "cl_lang_1": "Im Dienst",
+    "cl_lang_2": "Außer Dienst",
+    "cl_lang_3": "Meine Berufe",
+    "cl_lang_4": "Dienst umschalten",
+    "cl_lang_5": "Aktueller Status",
+    "cl_lang_grade": "Rang",
+    "cl_lang_salary": "Gehalt",
+    "cl_job_actions": "Berufsaktionen",
+    "cl_switch_job": "Beruf wechseln",
+    "cl_switch_your_job": "Wechsle deinen Beruf zu",
+    "cl_delete_job": "Beruf löschen",
+    "cl_delete_selected_job": "Ausgewählten Beruf löschen",
+
+    "sv_command_desc": "Öffnet dein Berufsmenü",
+    "sv_current_job_error": "Dein aktueller Beruf ist bereits dieser.",
+    "sv_invalid_job": "Ungültiger Beruf",
+    "sv_job": "Dein Beruf ist nun",
+    "sv_job_max": "Du hast die maximale Anzahl an Berufen erreicht.",
+    "sv_job_deleted": "Du hast den Beruf",
+    "sv_job_deleted_2": "aus deinem Menü gelöscht.",
+    "sv_job_specified": "Der Spieler hat den angegebenen Beruf nicht.",
+
+    "sv_command_remove": "Entfernt einen Beruf aus dem Mehrfach-Berufssystem eines Spielers",
+    "sv_command_r_id": "Spieler-ID",
+    "sv_command_r_name": "Name des Berufs",
+    "sv_provide": "Du musst eine Spieler-ID angeben.",
+    "sv_provide_name": "Du musst den Namen des Berufs angeben, der vom Spieler entfernt werden soll.",
+    
+    "sv_not_online": "Spieler ist nicht online"
+}
