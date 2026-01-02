@@ -42,6 +42,7 @@ $(document).ready(function (){
                 }, 500);
 
                 setTimeout(function(){
+                	selectedChar = null;
                     setCharactersList()
                     $.post('https://rsg-multicharacter/setupCharacters');
                     setTimeout(function(){
@@ -122,8 +123,13 @@ $(document).on('click', '#close-log', function(e){
 $(document).on('click', '.character', function(e) {
     var cDataPed = $(this).data('cData');
     e.preventDefault();
-    if (selectedChar === null) {
+    
+    if (selectedChar === null || $(selectedChar).attr('id') !== $(this).attr('id')) {
+        if (selectedChar !== null) {
+            $(selectedChar).removeClass("char-selected");
+        }
         selectedChar = $(this);
+        
         if ((selectedChar).data('cid') == "") {
             $(selectedChar).addClass("char-selected");
             setupCharInfo('empty')
@@ -144,30 +150,8 @@ $(document).on('click', '.character', function(e) {
                 cData: cDataPed
             }));
         }
-    } else if ($(selectedChar).attr('id') !== $(this).attr('id')) {
-        $(selectedChar).removeClass("char-selected");
-        selectedChar = $(this);
-        if ((selectedChar).data('cid') == "") {
-            $(selectedChar).addClass("char-selected");
-            setupCharInfo('empty')
-            $("#play-text").html("Register");
-            $("#play").css({"display":"block"});
-            $("#delete").css({"display":"none"});
-            $.post('https://rsg-multicharacter/cDataPed', JSON.stringify({
-                cData: cDataPed
-            }));
-        } else {
-            $(selectedChar).addClass("char-selected");
-            setupCharInfo($(this).data('cData'))
-            $("#play-text").html("Play");
-            $("#delete-text").html("Delete");
-            $("#play").css({"display":"block"});
-            $("#delete").css({"display":"block"});
-            $.post('https://rsg-multicharacter/cDataPed', JSON.stringify({
-                cData: cDataPed
-            }));
-        }
     }
+
 });
 
 var entityMap = {
