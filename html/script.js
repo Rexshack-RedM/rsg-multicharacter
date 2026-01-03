@@ -28,11 +28,11 @@ $(document).ready(function (){
                         $("#loading-text").html(originalText);
                     }
                     if (loadingProgress == 4) {
-                        originalText = "Retrieving characters"
+                        originalText = "Retrieving survivors"
                         $("#loading-text").html(originalText);
                     }
                     if (loadingProgress == 6) {
-                        originalText = "Validating characters"
+                        originalText = "Validating survivors"
                         $("#loading-text").html(originalText);
                     }
                     if(loadingDots == 4) {
@@ -42,7 +42,7 @@ $(document).ready(function (){
                 }, 500);
 
                 setTimeout(function(){
-                	selectedChar = null;
+                    selectedChar = null; // CHANGED: Reset selection on UI open to fix logout character reselection
                     setCharactersList()
                     $.post('https://rsg-multicharacter/setupCharacters');
                     setTimeout(function(){
@@ -123,13 +123,8 @@ $(document).on('click', '#close-log', function(e){
 $(document).on('click', '.character', function(e) {
     var cDataPed = $(this).data('cData');
     e.preventDefault();
-    
-    if (selectedChar === null || $(selectedChar).attr('id') !== $(this).attr('id')) {
-        if (selectedChar !== null) {
-            $(selectedChar).removeClass("char-selected");
-        }
+    if (selectedChar === null) {
         selectedChar = $(this);
-        
         if ((selectedChar).data('cid') == "") {
             $(selectedChar).addClass("char-selected");
             setupCharInfo('empty')
@@ -150,8 +145,32 @@ $(document).on('click', '.character', function(e) {
                 cData: cDataPed
             }));
         }
+    } else if ($(selectedChar).attr('id') !== $(this).attr('id')) {
+        $(selectedChar).removeClass("char-selected");
+        selectedChar = $(this);
+        if ((selectedChar).data('cid') == "") {
+            $(selectedChar).addClass("char-selected");
+            setupCharInfo('empty')
+            $("#play-text").html("Register");
+            $("#play").css({"display":"block"});
+            $("#delete").css({"display":"none"});
+            $.post('https://rsg-multicharacter/cDataPed', JSON.stringify({
+                cData: cDataPed
+            }));
+        } else {
+            $(selectedChar).addClass("char-selected");
+            setupCharInfo($(this).data('cData'))
+            $("#play-text").html("Play");
+            $("#delete-text").html("Delete");
+            $("#play").css({"display":"block"});
+            $("#delete").css({"display":"block"});
+            $.post('https://rsg-multicharacter/cDataPed', JSON.stringify({
+                cData: cDataPed
+            }));
+        }
     }
-
+    // CHANGED: Added comment explaining why clicking same character twice does nothing
+    // This is intentional - prevents double-clicks from causing issues
 });
 
 var entityMap = {
@@ -204,11 +223,11 @@ $(document).on('click', '#cancel-delete', function(e){
 });
 
 function setCharactersList() {
-    var htmlResult = '<div class="character-list-header"><p>My Characters</p></div>'
+    var htmlResult = '<div class="character-list-header"><p>My Survirors</p></div>'
     for (let i = 1; i <= NChar; i++) {
         htmlResult += '<div class="character" id="char-'+ i +'" data-cid=""><span id="slot-name">Empty Slot<span id="cid"></span></span></div>'
     }
-    htmlResult += '<div class="character-btn" id="play"><p id="play-text">Select a character</p></div><div class="character-btn" id="delete"><p id="delete-text">Select a character</p></div>'
+    htmlResult += '<div class="character-btn" id="play"><p id="play-text">Select a Survivor</p></div><div class="character-btn" id="delete"><p id="delete-text">Select a survivor</p></div>'
     $('.characters-list').html(htmlResult)
 }
 
@@ -218,7 +237,7 @@ function refreshCharacters() {
         htmlResult += '<div class="character" id="char-'+ i +'" data-cid=""><span id="slot-name">Empty Slot<span id="cid"></span></span></div>'
     }
 
-    htmlResult += '<div class="character-btn" id="play"><p id="play-text">Select a character</p></div><div class="character-btn" id="delete"><p id="delete-text">Select a character</p></div>'
+    htmlResult += '<div class="character-btn" id="play"><p id="play-text">Select a Survivor</p></div><div class="character-btn" id="delete"><p id="delete-text">Select a survivor</p></div>'
     $('.characters-list').html(htmlResult)
 
     setTimeout(function(){
