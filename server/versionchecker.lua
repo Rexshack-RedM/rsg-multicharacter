@@ -39,8 +39,21 @@ local function CheckVersion()
     end
 
     local versionUrl = githubRawBase .. resourceName .. '/version.txt'
+    local requestComplete = false
+    local timedOut = false
+
+    Citizen.CreateThread(function()
+        Wait(10000)
+        if not requestComplete then
+            timedOut = true
+            printLog('error', 'Version check timed out.')
+        end
+    end)
 
     PerformHttpRequest(versionUrl, function(statusCode, remoteVersion, headers)
+        if timedOut then return end
+        requestComplete = true
+
         if statusCode ~= 200 then
             printLog('error', ('Version check failed (HTTP %s). Check your internet or the GitHub URL.'):format(statusCode))
             return
