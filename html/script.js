@@ -79,6 +79,7 @@ $('.continue-btn').click(function(e){
 $('.disconnect-btn').click(function(e){
     e.preventDefault();
 
+    $.post('https://rsg-multicharacter/closeUI');
     $.post('https://rsg-multicharacter/disconnectButton');
 });
 
@@ -89,11 +90,11 @@ function setupCharInfo(cData) {
         var gender = "Man"
         if (cData.charinfo.gender == 1) { gender = "Woman" }
         $('.character-info-valid').html(
-        '<div class="character-info-box"><span id="info-label">Name: </span><span class="char-info-js">'+escapeHtml(cData.charinfo.firstname)+' '+escapeHtml(cData.charinfo.lastname)+'</span></div>' +
-        '<div class="character-info-box"><span id="info-label">Birth date: </span><span class="char-info-js">'+escapeHtml(cData.charinfo.birthdate)+'</span></div>' +
-        '<div class="character-info-box"><span id="info-label">Nationality: </span><span class="char-info-js">'+escapeHtml(cData.charinfo.nationality)+'</span></div>' +
-        '<div class="character-info-box"><span id="info-label">Job: </span><span class="char-info-js">'+escapeHtml(cData.job.label)+'</span></div>' +
-        '<div class="character-info-box"><span id="info-label">Cash: </span><span class="char-info-js">&#36; '+escapeHtml(cData.money.cash)+'</span></div>');
+        '<div class="character-info-box"><span id="info-label">Name: </span><span class="char-info-js">'+cData.charinfo.firstname+' '+cData.charinfo.lastname+'</span></div>' +
+        '<div class="character-info-box"><span id="info-label">Birth date: </span><span class="char-info-js">'+cData.charinfo.birthdate+'</span></div>' +
+        '<div class="character-info-box"><span id="info-label">Nationality: </span><span class="char-info-js">'+cData.charinfo.nationality+'</span></div>' +
+        '<div class="character-info-box"><span id="info-label">Job: </span><span class="char-info-js">'+cData.job.label+'</span></div>' +
+        '<div class="character-info-box"><span id="info-label">Cash: </span><span class="char-info-js">&#36; '+cData.money.cash+'</span></div>');
     }
 }
 
@@ -102,7 +103,7 @@ function setupCharacters(characters) {
         $('#char-'+char.cid).html("");
         $('#char-'+char.cid).data("citizenid", char.citizenid);
         setTimeout(function(){
-            $('#char-'+char.cid).html('<span id="slot-name">'+escapeHtml(char.charinfo.firstname)+' '+escapeHtml(char.charinfo.lastname)+'<span id="cid">' + escapeHtml(char.citizenid) + '</span></span>');
+            $('#char-'+char.cid).html('<span id="slot-name">'+char.charinfo.firstname+' '+char.charinfo.lastname+'<span id="cid">' + char.citizenid + '</span></span>');
             $('#char-'+char.cid).data('cData', char)
             $('#char-'+char.cid).data('cid', char.cid)
         }, 100)

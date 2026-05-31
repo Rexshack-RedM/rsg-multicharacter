@@ -90,7 +90,7 @@ local function baseModel(sex)
     end
 end
 
-local function initializePedModel(appearanceData, coords, heading, cb)
+local function initializePedModel(appearanceData, coords, heading)
     if spawnThread then TerminateThread(spawnThread) end
     spawnThread = CreateThread(function()
         local modelName
@@ -121,21 +121,7 @@ local function initializePedModel(appearanceData, coords, heading, cb)
             baseModel(modelName)
         end
         Wait(50)
-        if cb then cb() end
     end)
-end
-
-local function equipWeaponsOnPed(citizenid)
-    if not citizenid then return end
-    RSGCore.Functions.TriggerCallback('rsg-multicharacter:server:getCharacterWeapons', function(weapons)
-        if not charPed or not DoesEntityExist(charPed) then return end
-        for _, weaponName in ipairs(weapons) do
-            local hash = joaat(weaponName)
-            if IsWeaponValid(hash) then
-                GiveWeaponToPed(charPed, hash, 0, false, true)
-            end
-        end
-    end, citizenid)
 end
 
 local function skyCam(bool)
@@ -234,16 +220,13 @@ RegisterNUICallback('cDataPed', function(data, cb) -- Visually seeing the char
     cleanPed(charPed)
 
     if cData ~= nil then
-        local function onPedReady()
-            equipWeaponsOnPed(cData.citizenid)
-        end
         if cached_player_skins[cData.citizenid] then
-            initializePedModel(cached_player_skins[cData.citizenid], vector3(-558.91, -3776.25, 237.63), 90.0, onPedReady)
+            initializePedModel(cached_player_skins[cData.citizenid], vector3(-558.91, -3776.25, 237.63), 90.0)
             cb('ok')
         else
             RSGCore.Functions.TriggerCallback('rsg-multicharacter:server:getAppearance', function(appearance)
                 cached_player_skins[cData.citizenid] = appearance
-                initializePedModel(appearance, vector3(-558.91, -3776.25, 237.63), 90.0, onPedReady)
+                initializePedModel(appearance, vector3(-558.91, -3776.25, 237.63), 90.0)
                 cb('ok')
             end, cData.citizenid)
         end
