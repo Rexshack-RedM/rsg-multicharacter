@@ -42,6 +42,7 @@ $(document).ready(function (){
                 }, 500);
 
                 setTimeout(function(){
+                    selectedChar = null;
                     setCharactersList()
                     $.post('https://rsg-multicharacter/setupCharacters');
                     setTimeout(function(){
